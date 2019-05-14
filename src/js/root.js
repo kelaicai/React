@@ -1,19 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Router, Route,BrowserRouter,HashHistory,HashRouter,Switch,hashHistory} from 'react-router-dom';
+import {Router, Route,BrowserRouter,HashRouter,Switch,HashHistory,IndexRoute,Redirect} from 'react-router-dom';
 import {Button} from 'antd';
-import PCIndex from './components/pc_index';
-import PCNewsDetails from './components/pc_news_details';
 import MobileIndex from './components/mobile_index';
-import DeviceEditor from './components/deviceeditor';
-import SiderDemo from './components/siderPaneDeviceManager';
-import PCHeader from './components/pc_header';
-import PCFooter from './components/pc_footer';
-import Home from './components/home';
-// import Login from './components/login';
-import HomePage from './components/homepage';
-import 'antd/dist/antd.css';
 import MediaQuery from 'react-responsive';
+import UserPane from './components/userpane';
+import RootPane from './components/rootpane';
+import Login from './components/login';
 import DeviceList from './components/devicelist';
 import DeviceEdit from './components/deviceedit';
 import DeviceDiscardList from './components/devicediscardlist';
@@ -22,35 +15,44 @@ import DeviceUsingList from './components/deviceusinglist';
 import DeviceUsingEditor from './components/deviceusingeditor';
 import DeviceMaintenanceEditor from './components/devicemaintenanceeditor';
 import DeviceMaintenanceList from './components/devicemaintenancelist';
+import DeviceChangeList from './components/devicechangelist';
+import DeviceChangeEditor from './components/devicechangeeditor';
 import UserList from './components/userlist';
 import UserEditor from './components/usereditor';
+import UserEdit from './components/useredit';
+import DeviceEditor from './components/deviceeditor';
+import PCFooter from './components/pc_footer';
+import PCHeader from './components/pc_header';
+
+
+
+
+let hashHistory = Router.hashHistory;
 export default class Root extends React.Component {
+	// constructor()
+	// {
+	// 	this.state={
+	// 		hasLogined:'none',
+	// 		visible:'false'
+	// 	};
+	// };
+
 	render() {
+		console.log(hashHistory);
 		return (
 			<div>
+				<PCHeader/>
 				<MediaQuery query='(min-device-width: 1224px)'>
-					<PCHeader/>
-					<HashRouter history={hashHistory}>
-						<SiderDemo>
-							<Route exact path="/"  component={Home}/>
-							<Route path="/deviceApply/" component={DeviceEditor}/>
-							<Route path="/deviceSearch/" component={DeviceList}/>
-							<Route path="/deviceUsingApply/" component={DeviceUsingEditor}/>
-							<Route path="/deviceUsingSearch/" component={DeviceUsingList}/>
-							<Route path="/deviceMaintenanceApply/" component={DeviceMaintenanceEditor}/>
-							<Route path="/deviceMaintenanceSearch/" component={DeviceMaintenanceList}/>
-							<Route path="/deviceDiscardApply" component={DeviceDiscardEditor}/>
-							<Route path="/deviceDiscardSearch" component={DeviceDiscardList}/>
-							<Route path="/deviceEdit/:id" component={DeviceEdit}/>
-							<Route path="/userApply" component={UserEditor}/>
-							<Route path="/userSearch" component={UserList}/>
-						</SiderDemo>
+					<HashRouter history={HashHistory}>
+							<Route  path="/login" component={Login}/>
+							 <Route path="/sys" component={RootPane}/>
+							 <Route path="/user" component={UserPane}/>
 					</HashRouter>
-					<PCFooter/>
 				</MediaQuery>
 				<MediaQuery query='(max-device-width: 1224px)'>
 					<MobileIndex/>
 				</MediaQuery>
+				<PCFooter/>
 			</div>
 		);
 	};

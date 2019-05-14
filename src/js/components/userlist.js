@@ -1,5 +1,5 @@
 /**
- * 图书列表页面
+ * 列表页面
  */
 import React from 'react';
 // 引入 antd 组件
@@ -49,6 +49,12 @@ class UserList extends React.Component {
       this.setState({userList:json});
       console.log(json);
     }).catch(e => console.log('错误:', e));
+    if(this.state.status=='success')
+    {
+      editTarget==undefined?message.success("管理员信息提交成功"):message.success("管理员信息修改成功");
+      this.props.history.push('/user/deviceDiscardSearch');
+    }
+
   }
 
   // 生命周期--组件加载完毕
@@ -65,12 +71,12 @@ class UserList extends React.Component {
   /**
    * 编辑
    */
-  handleEdit(device){
+  handleEdit(user){
     // 跳转编辑页面
     console.log(this.context);
     console.log(this.context.history);
-    console.log(device);
-    this.props.history.push('/deviceEdit/' + device.id);
+    console.log(user);
+    this.props.history.push({pathname:'/sys/userEdit/' + user.id,state:{user:user}});
   }
 
 
@@ -78,7 +84,7 @@ class UserList extends React.Component {
   /**
    * 删除
    */
-  handleDel(device){
+  handleDel(user){
     // 执行删除数据操作
     var myFetchOptions = {
       method: 'GET',
@@ -88,7 +94,7 @@ class UserList extends React.Component {
       },
       timeout:10000,
     };
-    fetch('http://127.0.0.1:8070/user/deleteUserById?id=' + device.id, myFetchOptions)
+    fetch('http://127.0.0.1:8070/user/deleteUserById?id=' + user.id, myFetchOptions)
       .then(res => {
         /**
          * 设置状态
@@ -96,7 +102,7 @@ class UserList extends React.Component {
          * 把Array的某些元素过滤掉，然后返回剩下的元素
          */
         this.setState({
-          userList: this.state.userList.filter(item => item.id !== device.id)
+          userList: this.state.userList.filter(item => item.id !== user.id)
         });
         message.success('删除用户成功');
       })

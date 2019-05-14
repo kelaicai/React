@@ -70,7 +70,7 @@ class DeviceDiscardList extends React.Component {
     console.log(this.context);
     console.log(this.context.history);
     console.log(device);
-    this.props.history.push('/deviceEdit/' + device.id);
+    this.props.history.push({pathname:'/user/deviceDiscardEdit/' + device.id,state:{device:device}});
   }
 
 
@@ -98,11 +98,11 @@ class DeviceDiscardList extends React.Component {
         this.setState({
           deviceDiscardList: this.state.deviceDiscardList.filter(item => item.id !== device.id)
         });
-        message.success('删除用户成功');
+        message.success('删除报废记录成功');
       })
       .catch(err => {
         console.error(err);
-        message.error('删除用户失败');
+        message.error('删除报废记录失败');
       });
   }
 

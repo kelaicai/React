@@ -48,7 +48,18 @@ class DeviceMaintenanceEditor extends React.Component {
       form.setFieldsValue(editTarget);
     }
   }
-
+  /*
+  该方法在更新发生之后被调用，第一次render的时候并不会被调用；可以通过该方法在组件更新后操作DOM，
+  同样也是一个很好的发送网络请求的位置，当然这个的前提是，有对新的props和原来的props进行比较不同后再发送请求；
+  同样的当shouldComponentUpdate方法返回false时，该方法不会被调用
+  */
+  componentDidUpdate(prevProps, prevState, snapshot)
+  {
+    // if(this.state.status=='success')
+    // {
+    //   this.props.history.push("/user//deviceMaintenanceSearch");
+    // }
+  }
   // 按钮提交事件
   handleSubmit(e){
     // 阻止submit默认行为
@@ -63,6 +74,9 @@ class DeviceMaintenanceEditor extends React.Component {
     //   }
     // }
 
+
+    form.validateFields((err,value)=>{
+     if(!err){
       var formData= this.props.form.getFieldsValue();
       console.log(formData);
       var assetId=formData.assetId; //资产编号
@@ -73,7 +87,11 @@ class DeviceMaintenanceEditor extends React.Component {
       var content=formData.content1;
       // 默认值
       let editType = '添加';
-      let apiUrl = 'http://127.0.0.1:8070/deviceMaintenance/maintenanceApply?assetId='+assetId+
+      console.log(editTarget);
+      console.log(editTarget==undefined);
+      var dataMethod=editTarget==undefined?"maintenanceApply":"updateMaintenance";
+      console.log(dataMethod);
+      let apiUrl = 'http://127.0.0.1:8070/deviceMaintenance/'+dataMethod+'?assetId='+assetId+
       '&assetName='+assetName+
       '&date='+date+
       '&content='+content+
@@ -81,14 +99,8 @@ class DeviceMaintenanceEditor extends React.Component {
       '&maintenancer='+maintenancer;
 
       let method = 'post';
-      // 判断类型
-      if(editTarget){
-        editType = '编辑';
-        apiUrl += '/' + editTarget.id;
-        method = 'put';
-      }
 
-      console.log(apiUrl);
+
       var myFetchOptions = {
         method: 'GET',
         // mode:'no-cors',
@@ -97,6 +109,20 @@ class DeviceMaintenanceEditor extends React.Component {
         },
         timeout:10000,
       };
+      // 判断类型
+      if(editTarget){
+        editType = '编辑';
+
+        var  url = 'http://localhost:8080/#/user/deviceMaintenanceEdit/' + editTarget.id;
+          method = 'PUT';
+          fetch(url, myFetchOptions)
+          .then(res => res.json())
+          .catch(e => console.log('错误:', e));
+          console.log('status'+this.state.status);
+      }
+
+      console.log(apiUrl);
+
 
 
       fetch(apiUrl, myFetchOptions)
@@ -117,27 +143,12 @@ class DeviceMaintenanceEditor extends React.Component {
       console.log('status'+this.state.status);
       if(this.state.status=='success')
       {
-        message.success("设备维护信息提交成功");
-        this.props.history.push("/deviceMaintenanceSearch/");
+        editTarget==undefined?message.success("设备维护信息提交成功"):message.success("设备维护信息更新成功");
+        this.props.history.push("/user/deviceMaintenanceSearch/");
       }
-      // 发送请求
-    //   request(method,apiUrl,values)
-    //     // 成功的回调
-    //     .then((res) => {
-    //       // 当添加成功时,返回的json对象中应包含一个有效的id字段
-    //       // 所以可以使用res.id来判断添加是否成功
-    //       if(res.id){
-    //         message.success(editType + '添加图书成功!');
-    //         // 跳转到用户列表页面
-    //         this.context.router.push('/book/list');
-    //       }else{
-    //         message.error(editType + '添加图书失败!');
-    //       }
-    //     })
-    //     // 失败的回调
-    //     .catch((err) => console.error(err));
-    // });
-  };
+  }
+  })
+};
 
 
   // 获取推荐用户信息partialUserId

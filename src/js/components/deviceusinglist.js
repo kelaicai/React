@@ -70,7 +70,7 @@ class DeviceUsingEditor extends React.Component {
     console.log(this.context);
     console.log(this.context.history);
     console.log(device);
-    this.props.history.push('/deviceEdit/' + device.id);
+    this.props.history.push({pathname:'/user/deviceUsingEdit/' + device.id,state:{device:device}});
   }
 
 
@@ -98,11 +98,11 @@ class DeviceUsingEditor extends React.Component {
         this.setState({
           deviceUsingList: this.state.deviceUsingList.filter(item => item.id !== using.id)
         });
-        message.success('删除用户成功');
+        message.success('删除使用记录成功');
       })
       .catch(err => {
         console.error(err);
-        message.error('删除用户失败');
+        message.error('删除使用记录失败');
       });
   }
 

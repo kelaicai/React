@@ -45,9 +45,20 @@ class DeviceDiscardEditor extends React.Component {
      * 所以在componentDidMount里进行赋值
      */
     const {editTarget, form} = this.props;
+    console.log(this.props);
     if(editTarget){
       form.setFieldsValue(editTarget);
     }
+  }
+
+  /*
+  该方法在更新发生之后被调用，第一次render的时候并不会被调用；可以通过该方法在组件更新后操作DOM，
+  同样也是一个很好的发送网络请求的位置，当然这个的前提是，有对新的props和原来的props进行比较不同后再发送请求；
+  同样的当shouldComponentUpdate方法返回false时，该方法不会被调用
+  */
+  componentDidUpdate(prevProps, prevState, snapshot)
+  {
+      // this.props.history.push("/user/deviceUsingSearch");
   }
 
   // 按钮提交事件
@@ -57,12 +68,8 @@ class DeviceDiscardEditor extends React.Component {
     // 定义常量
     const { form, editTarget } = this.props; // 组件传值
     // 验证
-    // form.validateFields((err, values) => {
-    //   if(err){
-    //     message.warn(err);
-    //     return;
-    //   }
-    // }
+    form.validateFields((err,value)=>{
+     if(!err){
 
       var formData= this.props.form.getFieldsValue();
       console.log(formData);
@@ -72,20 +79,30 @@ class DeviceDiscardEditor extends React.Component {
       var date=formData.date;
       var time=formData.time;
       var timeLong=formData.timeLong;
+      var assetName=formData.assetName;
       // 默认值
       let editType = '添加';
-      let apiUrl = 'http://127.0.0.1:8070/deviceUsing/usingApply?assetId='+assetId+
+      console.log(editTarget);
+      console.log(editTarget==undefined);
+      var dataMethod=editTarget==undefined?"usingApply":"updateUsing";
+      console.log(dataMethod);
+      let apiUrl = 'http://127.0.0.1:8070/deviceUsing/'+dataMethod+'?assetId='+assetId+
       '&deviceUser='+deviceUser+
       '&teacher='+teacher+
       '&date='+date+
       '&time='+time+
-      '&timeLong='+timeLong;
-      let method = 'post';
+      '&timeLong='+timeLong
+      +'&assetName='+assetName;
+      let method = 'GET';
       // 判断类型
       if(editTarget){
         editType = '编辑';
-        apiUrl += '/' + editTarget.id;
+      var  url = 'http://localhost:8080/#/user/deviceUsingEdit/' + editTarget.id;
         method = 'put';
+        fetch(url, myFetchOptions)
+        .then(res => res.json())
+        .catch(e => console.log('错误:', e));
+        console.log('status'+this.state.status);
       }
 
       console.log(apiUrl);
@@ -100,14 +117,6 @@ class DeviceDiscardEditor extends React.Component {
 
 
       fetch(apiUrl, myFetchOptions)
-      // .then(function(response) {
-      //     return response.json();
-      //   }).then(function(data) {
-      //       console.log(data);
-      //       this.setState({status:data.status})
-      //   }).catch(function(e) {
-      //     console.log("Oops, error"+e);
-      // });
       .then(res => res.json())
       .then(json=>{
 
@@ -116,55 +125,16 @@ class DeviceDiscardEditor extends React.Component {
       }).catch(e => console.log('错误:', e));
       if(this.state.status=='success')
       {
-        message.success("设备使用信息提交成功");
-        this.props.history.push('/deviceUsingSearch');
+        editTarget=="undefined"?message.success("设备使用信息提交成功"):message.success("设备使用信息更新成功");
+        this.props.history.push('/user/deviceUsingSearch');
       }
+  }})
   };
 
 
   // 获取推荐用户信息partialUserId
       getRecommendUsers (assetId) {
-  //   // 请求数据
-  //   // get('http://localhost:8000/user?id_like=' + partialUserId)
-  //   // .then((res) => {
-  //   //   if(res.length === 1 && res[0].id === partialUserId){
-  //   //     // 如果结果只有1条且id与输入的id一致,说明输入的id已经完整了,没必要再设置建议列表
-  //   //     return;
-  //   //   }
-  //   var myFetchOptions = {
-  //     method: 'GET',
-  //     // mode:'no-cors',
-  //     headers:{
-  //       'Content-Type':'application/json;charset=UTF-8'
-  //     },
-  //     timeout:10000,
-  //   };
-  //   var url="http://127.0.0.1:8070/device/deviceSearchByAssetId?assetId="+assetId;
-  //   fetch(url, myFetchOptions)
-  //   // .then(function(response) {
-  //   //     return response.json();
-  //   //   }).then(function(data) {
-  //   //       console.log(data);
-  //   //       this.setState({status:data.status})
-  //   //   }).catch(function(e) {
-  //   //     console.log("Oops, error"+e);
-  //   // });
-  //   .then(res => res.json())
-  //   .then(json=>{
-  //
-  //     this.setState({status:json.status});
-  //     console.log(json);
-  //   }).catch(e => console.log('错误:', e));
-  //
-  //     // 设置建议列表
-  //     this.setState({
-  //       recommendUsers: res.map((user) => {
-  //         return {
-  //           text: `${user.id}(${user.name})`,
-  //           value: user.id
-  //         }
-  //     })
-  //   })
+
    }
 
   // 计时器
@@ -210,6 +180,19 @@ class DeviceDiscardEditor extends React.Component {
               {
                 required: true,
                 message: '请输入设备编号'
+              }
+            ]
+          })(
+            <Input type="text" />
+          )}
+        </FormItem>
+
+        <FormItem label="设备名称:" {...formLayout}>
+          {getFieldDecorator('assetName',{
+            rules: [
+              {
+                required: true,
+                message: '请输入设备名称'
               }
             ]
           })(

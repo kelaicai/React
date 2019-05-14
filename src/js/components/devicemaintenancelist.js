@@ -70,7 +70,7 @@ class DeviceMaintenanceList extends React.Component {
     console.log(this.context);
     console.log(this.context.history);
     console.log(device);
-    this.props.history.push('/deviceEdit/' + device.id);
+    this.props.history.push({pathname:'/user/deviceMaintenanceEdit/' + device.id,state:{device:device}});
   }
 
 
@@ -123,7 +123,7 @@ class DeviceMaintenanceList extends React.Component {
       },
       {
         title: '维护人',
-        dataIndex: 'maintancer',  //maintenancer
+        dataIndex: 'maintenancer',  //maintenancer
       },
       {
         title: '日期',

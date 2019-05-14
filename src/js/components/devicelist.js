@@ -48,8 +48,15 @@ class DeviceList extends React.Component {
       this.setState({deviceList:json});
       console.log(json);
     }).catch(e => console.log('错误:', e));
+
+
   }
 
+
+  noOp()
+  {
+
+  }
   // 生命周期--组件加载完毕
   componentDidMount(){
     /**
@@ -58,7 +65,7 @@ class DeviceList extends React.Component {
      */
     const {editTarget, form} = this.props;
     if(editTarget){
-      form.setFieldsValue(editTarget);
+      setTimeout(form.setFieldsValue(editTarget),10000);
     }
   }
   /**
@@ -66,10 +73,10 @@ class DeviceList extends React.Component {
    */
   handleEdit(device){
     // 跳转编辑页面
-    console.log(this.context);
-    console.log(this.context.history);
+    console.log("this.context:"+this.context);
+    console.log("this.context.history:"+this.context.history);
     console.log(device);
-    this.props.history.push('/deviceEdit/' + device.id);
+    this.props.history.push({pathname:'/user/deviceEdit/'+device.id, state:{device:device}});
   }
 
 
@@ -148,7 +155,7 @@ class DeviceList extends React.Component {
         title: '操作',
         render: (text, record) => (
           <Button.Group type="ghost">
-            <Button size="small" onClick={() => this.handleEdit(record)}>编辑</Button>
+            <Button size="small" onClick={() => {this.handleEdit(record)}}>编辑</Button>
             <Popconfirm
               title="确定要删除吗?"
               okText="确定"
@@ -162,7 +169,7 @@ class DeviceList extends React.Component {
     ];
 
     return (
-      <Table columns={columns} dataSource={deviceList} rowKey={row => row.id} />
+      <Table columns={columns} dataSource={deviceList} bordered rowKey={row => row.id} bo/>
     );
   }
 }
@@ -170,8 +177,8 @@ class DeviceList extends React.Component {
 /**
  * 任何使用this.context.xxx的地方，必须在组件的contextTypes里定义对应的PropTypes
  */
-DeviceList.contextTypes = {
-  router: PropTypes.object.isRequired
-};
+// DeviceList.contextTypes = {
+//   router: PropTypes.object.isRequired
+// };
 
 export default DeviceList;

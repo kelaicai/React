@@ -44,24 +44,39 @@ class UserEditor extends React.Component {
      * 所以在componentDidMount里进行赋值
      */
     const {editTarget, form} = this.props;
+      console.log('this.props: '+this.props);
     if(editTarget){
       form.setFieldsValue(editTarget);
     }
   }
 
+  /*
+  该方法在更新发生之后被调用，第一次render的时候并不会被调用；可以通过该方法在组件更新后操作DOM，
+  同样也是一个很好的发送网络请求的位置，当然这个的前提是，有对新的props和原来的props进行比较不同后再发送请求；
+  同样的当shouldComponentUpdate方法返回false时，该方法不会被调用
+  */
+  componentDidUpdate(prevProps, prevState, snapshot)
+  {
+    // if(this.state.status=='success')
+    // {
+    //   this.props.history.push("/sys/userSearch/");
+    // }
+  }
   // 按钮提交事件
   handleSubmit(e){
     // 阻止submit默认行为
     e.preventDefault();
     // 定义常量
     const { form, editTarget } = this.props; // 组件传值
-    // 验证
-    // form.validateFields((err, values) => {
+    console.log(this.props);
+    //验证
+    // form.validateFields((err,values)=> {
     //   if(err){
     //     message.warn(err);
     //     return;
     //   }
-    // }
+    //   console.log(values);
+    // });
 
       var formData= this.props.form.getFieldsValue();
       console.log(formData);
@@ -71,22 +86,24 @@ class UserEditor extends React.Component {
       var mail=formData.mail;
       var telphone=formData.telphone;
       var passwd=formData.passwd;
+      var role=formData.role;
       // 默认值
       let editType = '添加';
-      let apiUrl = 'http://127.0.0.1:8070/user/userApply?workId='+workId+
+      console.log(editTarget);
+      console.log(editTarget==undefined);
+      var dataMethod=editTarget==undefined?"userApply":"updateUser";
+      console.log(dataMethod);
+      let apiUrl = 'http://127.0.0.1:8070/user/'+dataMethod+'?workId='+workId+
       '&name='+name+
       '&age='+age+
       '&mail='+mail+
       '&telphone='+telphone+
-      '&passwd='+passwd;
+      '&passwd='+passwd+
+      '&role='+role;
 
       let method = 'post';
       // 判断类型
-      if(editTarget){
-        editType = '编辑';
-        apiUrl += '/' + editTarget.id;
-        method = 'put';
-      }
+
 
       console.log(apiUrl);
       var myFetchOptions = {
@@ -97,7 +114,16 @@ class UserEditor extends React.Component {
         },
         timeout:10000,
       };
+      if(editTarget){
+        editType = '编辑';
+        var url = 'http://localhost:8080/#/sys/userEdit/' + editTarget.id;
+        method = 'PUT';
+        fetch(url, myFetchOptions)
+        .then(res => res.json())
+        .catch(e => console.log('错误:', e));
+        console.log('status'+this.state.status);
 
+      }
 
       fetch(apiUrl, myFetchOptions)
       // .then(function(response) {
@@ -118,7 +144,7 @@ class UserEditor extends React.Component {
       if(this.state.status=='success')
       {
         message.success("设备管理员添加成功");
-        this.props.history.push("/usersSearch/");
+        this.props.history.push("/sys/usersSearch/");
       }
       // 发送请求
     //   request(method,apiUrl,values)
@@ -281,6 +307,19 @@ class UserEditor extends React.Component {
               {
                 required: true,
                 message: '请输入设备管理员邮箱'
+              }
+            ]
+          })(
+            <Input type="text" />
+          )}
+        </FormItem>
+
+        <FormItem label="角色:" {...formLayout}>
+          {getFieldDecorator('role',{
+            rules: [
+              {
+                required: true,
+                message: '请输入用户的角色'
               }
             ]
           })(

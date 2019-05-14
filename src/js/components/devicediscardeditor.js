@@ -38,6 +38,15 @@ class DeviceDiscardEditor extends React.Component {
     this.handleOwnerIdChange = this.handleOwnerIdChange.bind(this);
   }
 
+
+  componentDidUpdate(prevProps, prevState, snapshot)
+  {
+    // if(this.state.status=='success')
+    // {
+    //   this.props.history.push("/user/deviceDiscardSearch");
+    // }
+  }
+
   // 生命周期--组件加载完毕
   componentDidMount(){
     /**
@@ -57,7 +66,7 @@ class DeviceDiscardEditor extends React.Component {
     // 定义常量
     const { form, editTarget } = this.props; // 组件传值
     // 验证
-    // form.validateFields((err, values) => {
+     form.validateFields((err, values) => {
     //   if(err){
     //     message.warn(err);
     //     return;
@@ -73,17 +82,26 @@ class DeviceDiscardEditor extends React.Component {
       var date=formData.date
       // 默认值
       let editType = '添加';
-      let apiUrl = 'http://127.0.0.1:8070/deviceDiscard/discardApply?assetId='+assetId+
+      console.log(editTarget);
+      console.log(editTarget==undefined);
+      var dataMethod=editTarget==undefined?"verifyApply":"updateVerify";
+      console.log(dataMethod);
+      let apiUrl = 'http://127.0.0.1:8070/verify/verifyApply?assetId='+assetId+
       '&assetName='+assetName+
       '&petitioner='+petitioner+
       '&reason='+reason+
       '&date='+date;
       let method = 'post';
       // 判断类型
+
       if(editTarget){
         editType = '编辑';
-        apiUrl += '/' + editTarget.id;
-        method = 'put';
+        var  url = 'http://localhost:8080/#/user/deviceDiscardEdit/' + editTarget.id;
+          method = 'PUT';
+          fetch(url, myFetchOptions)
+          .then(res => res.json())
+          .catch(e => console.log('错误:', e));
+          console.log('status'+this.state.status);
       }
 
       console.log(apiUrl);
@@ -114,27 +132,12 @@ class DeviceDiscardEditor extends React.Component {
       }).catch(e => console.log('错误:', e));
       if(this.state.status=='success')
       {
-        message.success("报废信息提交成功");
-        this.props.history.push('/deviceDiscardSearch');
+        editTarget==undefined?message.success("报废信息提交成功"):message.success("报废信息修改成功");
+        this.props.history.push('/user/deviceDiscardSearch');
       }
-      // 发送请求
-    //   request(method,apiUrl,values)
-    //     // 成功的回调
-    //     .then((res) => {
-    //       // 当添加成功时,返回的json对象中应包含一个有效的id字段
-    //       // 所以可以使用res.id来判断添加是否成功
-    //       if(res.id){
-    //         message.success(editType + '添加图书成功!');
-    //         // 跳转到用户列表页面
-    //         this.context.router.push('/book/list');
-    //       }else{
-    //         message.error(editType + '添加图书失败!');
-    //       }
-    //     })
-    //     // 失败的回调
-    //     .catch((err) => console.error(err));
-    // });
-  };
+
+  });
+};
 
 
   // 获取推荐用户信息partialUserId
@@ -299,7 +302,7 @@ class DeviceDiscardEditor extends React.Component {
         </FormItem>
 
         <FormItem wrapperCol={{span: formLayout.wrapperCol.span, offset: formLayout.labelCol.span}}>
-          <Button type="primary" htmlType="submit" onClick={this.onClick.bind(this)}>提交</Button>
+          <Button type="primary" htmlType="submit" onClick={this.onClick.bind(this)}>提交审核</Button>
         </FormItem>
       </Form>
     );
