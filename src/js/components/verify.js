@@ -105,13 +105,14 @@ export default class Verify extends React.Component
                  </Button.Group>)
              }];
 
+
     return(
       <Table
        columns={columns}
 
        bordered={true}
 
-       dataSource={this.state.recordList}
+       dataSource={this.state.recordList.filter((item)=>item.prograss!='finish')}
 
        rowKey={record => record.id}
        />

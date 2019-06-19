@@ -10,6 +10,7 @@ import {Redirect} from 'react-router-dom';
 import UserPane from './userpane';
 import RootPane from './rootpane';
 import $ from  'jquery';
+import Cookies from 'js-cookie';
 
 
 var redirectable=false;
@@ -41,11 +42,12 @@ class NormalLoginForm extends React.Component {
 
   componentWillMount()
   {
-    console.log('componentwillMount');
-    if(this.state.status=="success")
-    {
-      this.props.history.push('/'+this.state.player);
-    }
+    console.log('componentWillMount');
+    // console.log('componentwillMount');
+    // if(this.state.status=="success")
+    // {
+    //   this.props.history.push('/'+this.state.player);
+    // }
   }
 
 
@@ -65,6 +67,7 @@ class NormalLoginForm extends React.Component {
   {
 
      e.preventDefault();
+
      var formData= this.props.form.getFieldsValue();
      var workId=formData.userId;
      var passwd=formData.password;
@@ -99,16 +102,19 @@ class NormalLoginForm extends React.Component {
 
                         if(result.status=="success")
                         {
-
+                          Cookies.set('workId',workId, { expires: 7, path: '/' });
+                          Cookies.set('player', player, { expires: 7, path: '/' });
+                          Cookies.set('hasLogined', true, { expires: 7, path: '/' });
+                          localStorage.setItem("workId",workId);
+                          localStorage.setItem("player",player);
+                          localStorage.setItem("hasLogined",true);
                           if(_this.state.player=="user")
                           {
                             message.success("登陆成功");
-                            document.cookie=encodeURIComponent("workId")+"="+encodeURIComponent(workId);
                             _this.props.history.push("/user");
                           }
                           else if(_this.state.player=="sys"){
                           message.success("登陆成功");
-                          document.cookie=encodeURIComponent("workId")+"="+encodeURIComponent(workId);
                           _this.props.history.push("/sys");
 
                           }
@@ -119,9 +125,13 @@ class NormalLoginForm extends React.Component {
                           message.error("用户不存在");
                         }
                         else {
-                          message.error("登陆失败,重新尝试登录");
+                          message.error("密码错误,请检查密码或者账号重新登录");
                           return <Redirect to='/login'/>
                         }
+                      },
+                      error:function(xhr,status,err)
+                      {
+                        message.error('你遇到了：'+err);
                       }
                       // error:function(xhr,status, err) {
                       //     console.error( status, err.toString());
@@ -133,19 +143,6 @@ class NormalLoginForm extends React.Component {
                       // }
             });
 
-      // fetch(url, myFetchOptions)
-      // .then(res => res.json())
-      // .then(json=>{
-      //
-      //   this.setState({status:json.status});
-      //   console.log(url);
-      //   console.log(json);
-      // }).catch(e => console.log('错误:', e));
-
-      // if (this.state.action=="login") {
-      //   this.setState({hasLogined:true});
-      // }
-      //message.success("请求成功！");
 
       console.log(this.state);
         // Dismiss manually and asynchronously
@@ -198,6 +195,7 @@ class NormalLoginForm extends React.Component {
           <RadioGroup onChange={this.onChange.bind(this)} defaultValue={"user"}>
             <Radio value={"user"}>我是实验设备管理员</Radio>
             <Radio value={"sys"}>我是管理员</Radio>
+            <a href="mailto:labapply@163.com?cc=15025005925@163.com">我要使用系统</a>
           </RadioGroup>
         </Form.Item>
         <Form.Item>

@@ -6,6 +6,7 @@ import React from 'react';
 import { message, Table, Button, Popconfirm } from 'antd';
 // 引入 prop-types
 import PropTypes from 'prop-types';
+import Cookies from 'js-cookie';
 // 引入 封装fetch工具类
 // import { get, del } from '../utils/request';
 
@@ -33,7 +34,15 @@ class DeviceList extends React.Component {
       },
       timeout:10000,
     };
-    fetch("http://127.0.0.1:8070/device/getDeviceAll", myFetchOptions)
+
+    //var workId=Cookies.get("workId");
+    var workId=localStorage.getItem("workId");
+    console.log("workId in deviceList");
+    console.log(workId);
+    var temp=workId!=undefined?message.success('获取用户信息成功'):message.error('获取用户信息失败');
+    var url="http://127.0.0.1:8070/device/findDeviceByWorkId?workId="+workId;
+    console.log(url);
+    fetch(url, myFetchOptions)
     // .then(function(response) {
     //     return response.json();
     //   }).then(function(data) {
@@ -44,7 +53,6 @@ class DeviceList extends React.Component {
     // });
     .then(res => res.json())
     .then(json=>{
-
       this.setState({deviceList:json});
       console.log(json);
     }).catch(e => console.log('错误:', e));
@@ -104,11 +112,11 @@ class DeviceList extends React.Component {
         this.setState({
           deviceList: this.state.deviceList.filter(item => item.id !== device.id)
         });
-        message.success('删除用户成功');
+        message.success('删除设备成功');
       })
       .catch(err => {
         console.error(err);
-        message.error('删除用户失败');
+        message.error('删除设备失败');
       });
   }
 
@@ -169,7 +177,10 @@ class DeviceList extends React.Component {
     ];
 
     return (
-      <Table columns={columns} dataSource={deviceList} bordered rowKey={row => row.id} bo/>
+      <Table columns={columns}
+      dataSource={deviceList}
+      bordered
+      rowKey={row => row.id} />
     );
   }
 }

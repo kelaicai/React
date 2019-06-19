@@ -61,7 +61,7 @@ export default class UserPane extends React.Component {
 								<Route path="/user/deviceMaintenanceEdit/:id" component={DeviceMaintenanceEdit}/>
 								<Route path="/user/deviceDiscardEdit/:id" component={DeviceDiscardEdit}/>
 								<Route path="/user/deviceChangeEdit/:id" component={DeviceChangeEdit}/>
-								<Route path="/user/Conmunication/" component={Conmunication}/>
+								<Route path="/user/conmunication/" component={Conmunication}/>
 							 </SiderUser>
 				</MediaQuery>
 				<MediaQuery query='(max-device-width: 1224px)'>

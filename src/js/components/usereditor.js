@@ -3,7 +3,7 @@
  */
 import React from 'react';
 // 引入 antd 组件
-import { Input, InputNumber, Form, Button, message } from 'antd';
+import { Input, InputNumber, Form, Button, message ,Select} from 'antd';
 // 引入 prop-types
 import PropTypes from 'prop-types';
 // 引入自动完成组件
@@ -16,7 +16,7 @@ const FormItem = Form.Item;
 const formLayout = {
   // label 标签布局，同 <Col> 组件
   labelCol: {
-    span: 4
+    span: 5
   },
   wrapperCol: {
     span: 16
@@ -139,42 +139,19 @@ class UserEditor extends React.Component {
 
         this.setState({status:json.status});
         console.log(json);
+        if(json.status=='success')
+        {
+          editTarget?message.success('用户信息修改成功'):message.success('用户信息提交成功');
+          editTarget?window.history.back():this.props.history.push('/sys/userSearch/');
+        }
       }).catch(e => console.log('错误:', e));
       console.log('status'+this.state.status);
-      if(this.state.status=='success')
-      {
-        message.success("设备管理员添加成功");
-        this.props.history.push("/sys/usersSearch/");
-      }
-      // 发送请求
-    //   request(method,apiUrl,values)
-    //     // 成功的回调
-    //     .then((res) => {
-    //       // 当添加成功时,返回的json对象中应包含一个有效的id字段
-    //       // 所以可以使用res.id来判断添加是否成功
-    //       if(res.id){
-    //         message.success(editType + '添加图书成功!');
-    //         // 跳转到用户列表页面
-    //         this.context.router.push('/book/list');
-    //       }else{
-    //         message.error(editType + '添加图书失败!');
-    //       }
-    //     })
-    //     // 失败的回调
-    //     .catch((err) => console.error(err));
-    // });
+
   };
 
 
   // 获取推荐用户信息partialUserId
   getRecommendUsers (assetId) {
-    // 请求数据
-    // get('http://localhost:8000/user?id_like=' + partialUserId)
-    // .then((res) => {
-    //   if(res.length === 1 && res[0].id === partialUserId){
-    //     // 如果结果只有1条且id与输入的id一致,说明输入的id已经完整了,没必要再设置建议列表
-    //     return;
-    //   }
     var myFetchOptions = {
       method: 'GET',
       // mode:'no-cors',
@@ -185,14 +162,6 @@ class UserEditor extends React.Component {
     };
     var url="http://127.0.0.1:8070/user/deviceSearchByAssetId?assetId="+assetId;
     fetch(url, myFetchOptions)
-    // .then(function(response) {
-    //     return response.json();
-    //   }).then(function(data) {
-    //       console.log(data);
-    //       this.setState({status:data.status})
-    //   }).catch(function(e) {
-    //     console.log("Oops, error"+e);
-    // });
     .then(res => res.json())
     .then(json=>{
 
@@ -200,15 +169,6 @@ class UserEditor extends React.Component {
       console.log(json);
     }).catch(e => console.log('错误:', e));
 
-      // 设置建议列表
-    //   this.setState({
-    //     recommendUsers: res.map((user) => {
-    //       return {
-    //         text: `${user.id}(${user.name})`,
-    //         value: user.id
-    //       }
-    //   })
-    // })
   }
 
   // 计时器
@@ -323,7 +283,10 @@ class UserEditor extends React.Component {
               }
             ]
           })(
-            <Input type="text" />
+            <Select placeholder="请选择用户角色">
+            <Option value="sys">系统管理员</Option>
+            <Option value="user">用户管理员</Option>
+          </Select>
           )}
         </FormItem>
 

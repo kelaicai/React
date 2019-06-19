@@ -3,7 +3,8 @@
  */
 import React from 'react';
 // 引入 antd 组件
-import { Input, InputNumber, Form, Button, message } from 'antd';
+import { Input, InputNumber, Form, Button, message,DatePicker } from 'antd';
+import locale from 'antd/lib/date-picker/locale/zh_CN';
 // 引入 prop-types
 import PropTypes from 'prop-types';
 // 引入自动完成组件
@@ -113,11 +114,11 @@ class DeviceMaintenanceEditor extends React.Component {
       if(editTarget){
         editType = '编辑';
 
-        var  url = 'http://localhost:8080/#/user/deviceMaintenanceEdit/' + editTarget.id;
-          method = 'PUT';
-          fetch(url, myFetchOptions)
-          .then(res => res.json())
-          .catch(e => console.log('错误:', e));
+        // var  url = 'http://localhost:8080/#/user/deviceMaintenanceEdit/' + editTarget.id;
+        //   method = 'PUT';
+        //   fetch(url, myFetchOptions)
+        //   .then(res => res.json())
+        //   .catch(e => console.log('错误:', e));
           console.log('status'+this.state.status);
       }
 
@@ -126,26 +127,19 @@ class DeviceMaintenanceEditor extends React.Component {
 
 
       fetch(apiUrl, myFetchOptions)
-      // .then(function(response) {
-      //     return response.json();
-      //   }).then(function(data) {
-      //       console.log(data);
-      //       this.setState({status:data.status})
-      //   }).catch(function(e) {
-      //     console.log("Oops, error"+e);
-      // });
       .then(res => res.json())
       .then(json=>{
 
         this.setState({status:json.status});
         console.log(json);
+        if(json.status=='success')
+        {
+          editTarget?message.success('设备维护信息修改成功'):message.success('设备维护信息提交成功');
+          window.history.back();
+        }
       }).catch(e => console.log('错误:', e));
       console.log('status'+this.state.status);
-      if(this.state.status=='success')
-      {
-        editTarget==undefined?message.success("设备维护信息提交成功"):message.success("设备维护信息更新成功");
-        this.props.history.push("/user/deviceMaintenanceSearch/");
-      }
+
   }
   })
 };
@@ -170,14 +164,6 @@ class DeviceMaintenanceEditor extends React.Component {
     };
     var url="http://127.0.0.1:8070/device/deviceSearchByAssetId?assetId="+assetId;
     fetch(url, myFetchOptions)
-    // .then(function(response) {
-    //     return response.json();
-    //   }).then(function(data) {
-    //       console.log(data);
-    //       this.setState({status:data.status})
-    //   }).catch(function(e) {
-    //     console.log("Oops, error"+e);
-    // });
     .then(res => res.json())
     .then(json=>{
 
@@ -228,7 +214,7 @@ class DeviceMaintenanceEditor extends React.Component {
   render() {
     // 定义常量
     const {recommendUsers} = this.state;
-    const {form} = this.props;
+    const {editTarget,form} = this.props;
     const {getFieldDecorator} = form;
 
     return (
@@ -289,7 +275,8 @@ class DeviceMaintenanceEditor extends React.Component {
               }
             ]
           })(
-            <Input type="text" />
+
+          <Input type="text" />
           )}
         </FormItem>
 

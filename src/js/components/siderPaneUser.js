@@ -1,9 +1,11 @@
+
 import React from 'react';
 import {
   Layout, Menu, Breadcrumb, Icon,Button,
 } from 'antd';
 import 'antd/dist/antd.css';
 import Home from './home';
+import PersonInfo from './personinfo';
 import '../../css/home-page.css';
 const {
   Header, Content, Footer, Sider,
@@ -11,6 +13,8 @@ const {
 
 import {Link} from 'react-router-dom';
 const SubMenu = Menu.SubMenu;
+
+import Cookies from 'js-cookie';
 
 export default class SiderUser extends React.Component {
   constructor(props){
@@ -38,6 +42,8 @@ export default class SiderUser extends React.Component {
       timeout:10000,
     };
 
+
+    //向服务器发送退出消息
     fetch(url,myFetchOptions)
     .then(
       res=>res.json())
@@ -48,7 +54,11 @@ export default class SiderUser extends React.Component {
       this.setState({
         status: json.status
       });
-    })
+    });
+    //消除sessionStorage中的存取的状态信息
+    Cookies.remove('workId', { path: '/' });
+    Cookies.remove('player', { path: '/' });
+    Cookies.remove('hasLogined', { path: '/' });
   }
 
   openChange(e)
@@ -83,6 +93,7 @@ export default class SiderUser extends React.Component {
           <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" onClick={this.onClick.bind(this)}
           onOpenChange={this.openChange.bind(this)}
           >
+          <PersonInfo/>
           <SubMenu
             key="sub1"
             title={<span><Icon type="appstore"
@@ -128,14 +139,17 @@ export default class SiderUser extends React.Component {
 
 
             <SubMenu
-            key="sub5"
+            key="sub6"
             title={<span><Icon type="appstore"/><span>工作交流</span></span>}
             >
             <Menu.Item key="12">
               <Icon type="message" />
-              <span><Link to="/sys/conmunication">工作交流</Link></span>
+              <span><Link to="/user/conmunication/">工作交流</Link></span>
             </Menu.Item>
             </SubMenu>
+            <Menu.Item key="13">
+              <span><Button ghost="true" icon='poweroff' style={{marginTop:15}} href='http://127.0.0.1:8080/#/login' onClick={this.onClick.bind(this)}>退出</Button></span>
+            </Menu.Item>
           </Menu>
         </Sider>
         <Layout>

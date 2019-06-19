@@ -3,7 +3,8 @@
  */
 import React from 'react';
 // 引入 antd 组件
-import { Input, InputNumber, Form, Button, message } from 'antd';
+import { Input, InputNumber, Form, Button, message,DatePicker } from 'antd';
+import locale from 'antd/lib/date-picker/locale/zh_CN';
 // 引入 prop-types
 import PropTypes from 'prop-types';
 // 引入自动完成组件
@@ -98,10 +99,10 @@ class DeviceDiscardEditor extends React.Component {
         editType = '编辑';
         var  url = 'http://localhost:8080/#/user/deviceDiscardEdit/' + editTarget.id;
           method = 'PUT';
-          fetch(url, myFetchOptions)
-          .then(res => res.json())
-          .catch(e => console.log('错误:', e));
-          console.log('status'+this.state.status);
+          // fetch(url, myFetchOptions)
+          // .then(res => res.json())
+          // .catch(e => console.log('错误:', e));
+          // console.log('status'+this.state.status);
       }
 
       console.log(apiUrl);
@@ -116,26 +117,31 @@ class DeviceDiscardEditor extends React.Component {
 
 
       fetch(apiUrl, myFetchOptions)
-      // .then(function(response) {
-      //     return response.json();
-      //   }).then(function(data) {
-      //       console.log(data);
-      //       this.setState({status:data.status})
-      //   }).catch(function(e) {
-      //     console.log("Oops, error"+e);
-      // });
       .then(res => res.json())
       .then(json=>{
-
         this.setState({status:json.status});
         console.log(json);
+        if(json.status!=404)
+        {
+          if(json.status=='success')
+          {
+            editTarget?message.success('报废信息申请成功'):message.success('报废信息修改从错误');
+            window.history.back();
+          }
+          else{
+            message.loading();
+          }
+        }
+        else
+        {
+          message.console.error('服务器出现错误');
+        }
       }).catch(e => console.log('错误:', e));
       if(this.state.status=='success')
       {
-        editTarget==undefined?message.success("报废信息提交成功"):message.success("报废信息修改成功");
-        this.props.history.push('/user/deviceDiscardSearch');
+        editTarget==undefined?message.success("报废申请提交成功"):message.success("报废信息修改成功");
+        this.props.history!=undefined?this.props.history.push('/user/deviceDiscardSearch'):window.history.back();;
       }
-
   });
 };
 
@@ -217,7 +223,7 @@ class DeviceDiscardEditor extends React.Component {
   render() {
     // 定义常量
     const {recommendUsers} = this.state;
-    const {form} = this.props;
+    const {editTarget,form} = this.props;
     const {getFieldDecorator} = form;
 
     return (
@@ -294,10 +300,8 @@ class DeviceDiscardEditor extends React.Component {
               // }
             ]
           })(
-            <AutoComplete
-              options={recommendUsers}
-              onChange={this.handleOwnerIdChange}
-            />
+
+          <Input type="text" />
           )}
         </FormItem>
 

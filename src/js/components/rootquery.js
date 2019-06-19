@@ -77,9 +77,7 @@ class NestedTableDevice extends React.Component
                 title: '使用部门',
                 dataIndex: 'usingDepartment',
               },
-              {
-                title: 'Action',
-                render: () => < a href = "javascript:;" > Publish < /a> },
+
               ];
 
      return(
@@ -143,9 +141,7 @@ class NestedTableMaintenance extends React.Component
                 title: '其他',
                 dataIndex: 'otehr',
               },
-              {
-                title: 'Action',
-                render: () => < a href = "javascript:;" > Publish < /a> },
+
               ];
 
      return(
@@ -205,9 +201,6 @@ class NestedTableChange extends React.Component
                 title: '变更原因',
                 dataIndex: 'reason',
               },
-              {
-                title: 'Action',
-                render: () => < a href = "javascript:;" > Publish < /a> },
               ];
 
      return(
@@ -251,9 +244,6 @@ class NestedTableStore extends React.Component
                 title: '数量',
                 dataIndex: 'count',
               },
-              {
-                title: 'Action',
-                render: () => < a href = "javascript:;" > Publish < /a> },
               ];
 
      return(
@@ -309,9 +299,7 @@ class NestedTableVerify extends React.Component
                 title: '审核进度',
                 dataIndex: 'prograss',
               },
-              {
-                title: 'Action',
-                render: () => < a href = "javascript:;" > Publish < /a> },
+
               ];
 
      return(
@@ -363,9 +351,6 @@ class NestedTableDiscard extends React.Component
                 title: '报废原因',
                 dataIndex: 'reason',
               },
-              {
-                title: 'Action',
-                render: () => < a href = "javascript:;" > Publish < /a> },
               ];
 
      return(
@@ -422,9 +407,6 @@ class NestedTableUsing extends React.Component
                 title: '使用时长',
                 dataIndex: 'timeLong',
               },
-              {
-                title: 'Action',
-                render: () => < a href = "javascript:;" > Publish < /a> },
               ];
 
      return(
@@ -473,9 +455,7 @@ class NestedTableUsingAndMaintenance extends React.Component
                 title: '维护次数',
                 dataIndex: 'maintenanceCount',
               },
-              {
-                title: 'Action',
-                render: () => < a href = "javascript:;" > Publish < /a> },
+
               ];
 
      return(
@@ -684,7 +664,7 @@ export default class RootQuery extends React.Component {
             return (
               <div>
               <Search
-              placeholder = "input search text"
+              placeholder = "请输入编号信息"
               onSearch = {
                 this.searchHandler.bind(this)
               }
@@ -709,10 +689,13 @@ export default class RootQuery extends React.Component {
                <
               Radio value = {
                 "using"
-              } > 使用情况 < /Radio> <
+              } > 使用情况 < /Radio>
+      {   /*    <
               Radio value = {
                 "store"
-              } > 库存信息 < /Radio> <
+              } > 库存信息 < /Radio>
+          */  }
+               <
               Radio value = {
                 "discard"
               } > 报废信息 < /Radio>

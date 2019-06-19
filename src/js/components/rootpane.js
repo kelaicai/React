@@ -27,6 +27,7 @@ import UserEdit from './useredit';
 import RootQuery from './rootquery';
 import Verify from './verify';
 import Conmunication from './conmunication';
+import SysInfo from './sysinfo';
 let hashHistory = Router.hashHistory;
 export default class RootPane extends React.Component {
 	// constructor()
@@ -60,6 +61,7 @@ export default class RootPane extends React.Component {
 								<Route path="/user/deviceEdit/:id" component={DeviceEdit}/>
 								<Route path="/sys/userEdit/:id" component={UserEdit}/>
 								<Route path="/sys/verify/" component={Verify}/>
+								<Route path="/sys/info" component={SysInfo}/>
 								<Route path="/sys/conmunication/" component={Conmunication}/>
 							 </SiderRoot>
 				</MediaQuery>

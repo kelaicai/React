@@ -1,6 +1,8 @@
 import React from 'react';
-import { Comment, Avatar, Form, Button, List, Input } from 'antd';
+import { Comment, Avatar, Form, Button, List, Input,message,Tooltip } from 'antd';
 import moment from 'moment';
+import $ from 'jquery';
+import Cookies from 'js-cookie';
 
 const TextArea = Input.TextArea;
 
@@ -26,6 +28,23 @@ const Editor = ({ onChange, onSubmit, submitting, value }) => (
   </div>
 );
 
+
+function lowerJSONKey(jsonObj){
+    for (var key in jsonObj){
+        jsonObj["\""+key.toLowerCase()+"\""] = jsonObj[key];
+        delete(jsonObj[key]);
+    }
+    return jsonObj;
+};
+
+function lowerJsonList(jsonList){
+  var newList=[];
+  for(let item of jsonList){
+    newList.push(lowerJSONKey(item));
+  }
+  return newList;
+}
+
 class Conmunication extends React.Component {
 
 
@@ -36,6 +55,7 @@ class Conmunication extends React.Component {
       comments: [],
       submitting: false,
       value: '',
+      status:'',
     };
   }
 
@@ -50,13 +70,42 @@ class Conmunication extends React.Component {
       },
       timeout:10000,
     };
+    console.log(url);
+
+
 
     fetch(url,myFetchOptions)
     .then(response=>response.json())
-    .then(coms=>{
-      this.setState({comments:coms})
+    .then(res=>{
+        console.log('comments');
+        this.setState({comments:res});
     }).catch(e => console.log('错误:', e));
+    var _this=this;
+    $.ajax({
+                    type:"GET",
+                    url:url,
+                    dataType:"json",
+                    success:function (comments) {
+                      console.log('comments');
+                      console.log(comments);
+                      comments=lowerJsonList(comments);
+                      console.log(_this);
+                      var newC=[];
+                      $.foreach(comments,function(index,item){
+                          console.log(comments[index].workId);
+                          console.log(comments[index].comment);
+                      }
+                    )
+                      _this.setState({comments:comments});
+                    },
+                    error:function()
+                    {
+                      console.log('获取评论失败');
+                    }
 
+          });
+    console.log('comments');
+    console.log(this.state.comments);
   }
 
   handleSubmit = () => {
@@ -67,8 +116,11 @@ class Conmunication extends React.Component {
     this.setState({
       submitting: true,
     });
-
-    var url='http://127.0.0.1:8070/comments/commentAppl?workId=15040308118&comment='+this.state.value;
+    var workid=Cookies.get("workId");
+    console.log('workId in communication ：'+workid);
+    var test=workid!=undefined?message.success('获取工号成功'):message.warning('工号获取失败');
+    var url='http://127.0.0.1:8070/comments/commentApply?workId='+workid+'&comment='+this.state.value;
+    console.log('comment apply url:'+url);
     var myFetchOptions = {
       method: 'GET',
       // mode:'no-cors',
@@ -78,6 +130,12 @@ class Conmunication extends React.Component {
       timeout:10000,
     };
 
+
+    fetch(url,myFetchOptions)
+    .then(response=>response.json())
+    .then(coms=>{
+        this.setState({status:coms.status})
+    }).catch(e => console.log('错误:', e));
 
 
     setTimeout(() => {
@@ -108,9 +166,54 @@ class Conmunication extends React.Component {
   render() {
     const { comments, submitting, value } = this.state;
 
+    var newComments=[];
+    for(let item of  comments)
+    {
+      newComments.push({
+        author:item.workid,
+        avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+        content: (
+          <p>
+            {item.comment}
+          </p>
+        ),
+        datetime: (
+          <Tooltip
+          title={moment()
+            .subtract(1, 'days')
+            .format('YYYY-MM-DD HH:mm:ss')}
+            >
+            <span>
+            {moment()
+              .subtract(1, 'days')
+              .fromNow()}
+              </span>
+              </Tooltip>
+            )
+      });
+    }
+    console.log('communication render state:');
+    console.log(this.state);
+    console.log('newComments');
+    console.log(newComments);
     return (
       <div>
-        {comments.length > 0 && <CommentList comments={comments} />}
+      <List
+        className="comment-list"
+        header={`${newComments.length} replies`}
+        itemLayout="horizontal"
+        dataSource={newComments}
+        renderItem={item => (
+          <li>
+            <Comment
+              author={item.author}
+              avatar={item.avatar}
+              content={item.content}
+              datetime={item.datetime}
+              />
+          </li>
+        )}
+        />
         <Comment
           avatar={
             <Avatar

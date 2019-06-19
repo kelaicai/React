@@ -3,7 +3,8 @@
  */
 import React from 'react';
 // 引入 antd 组件
-import { Input, InputNumber, Form, Button, message } from 'antd';
+import { Input, InputNumber, Form, Button, message,DatePicker } from 'antd';
+import locale from 'antd/lib/date-picker/locale/zh_CN';
 // 引入 prop-types
 import PropTypes from 'prop-types';
 // 引入自动完成组件
@@ -99,9 +100,7 @@ class DeviceDiscardEditor extends React.Component {
         editType = '编辑';
       var  url = 'http://localhost:8080/#/user/deviceUsingEdit/' + editTarget.id;
         method = 'put';
-        fetch(url, myFetchOptions)
-        .then(res => res.json())
-        .catch(e => console.log('错误:', e));
+
         console.log('status'+this.state.status);
       }
 
@@ -122,12 +121,13 @@ class DeviceDiscardEditor extends React.Component {
 
         this.setState({status:json.status});
         console.log(json);
+        if(json.status=='success')
+        {
+          editTarget?message.success('设备信息修改成功'):message.success('设备信息提交成功');
+          window.history.back();
+        }
       }).catch(e => console.log('错误:', e));
-      if(this.state.status=='success')
-      {
-        editTarget=="undefined"?message.success("设备使用信息提交成功"):message.success("设备使用信息更新成功");
-        this.props.history.push('/user/deviceUsingSearch');
-      }
+
   }})
   };
 
@@ -169,7 +169,7 @@ class DeviceDiscardEditor extends React.Component {
   render() {
     // 定义常量
     const {recommendUsers} = this.state;
-    const {form} = this.props;
+    const {editTarget,form} = this.props;
     const {getFieldDecorator} = form;
 
     return (
@@ -242,6 +242,7 @@ class DeviceDiscardEditor extends React.Component {
               }
             ]
           })(
+
             <Input type="text" />
           )}
         </FormItem>

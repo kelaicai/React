@@ -3,12 +3,14 @@
  */
 import React from 'react';
 // 引入 antd 组件
-import { Input, InputNumber, Form, Button, message } from 'antd';
+import { Input, InputNumber, Form, Button, message,DatePicker} from 'antd';
+import locale from 'antd/lib/date-picker/locale/zh_CN';
 // 引入 prop-types
 import PropTypes from 'prop-types';
 // 引入自动完成组件
 import AutoComplete from './autocomplete'; // 也可以写为 './AutoComplete'
 // 引入 封装fetch工具类
+
 
 // const Option = AutoComplete.Option;
 const FormItem = Form.Item;
@@ -37,17 +39,13 @@ class DeviceChangeEditor extends React.Component {
     this.handleOwnerIdChange = this.handleOwnerIdChange.bind(this);
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot)
-  {
-
-  }
   componentWillMount()
   {
-    console.log("willMount");
-    if(this.state.status=='success')
-    {
-      this.props.history.push("/user/deviceChangeSearch");
-    }
+    // console.log("willMount");
+    // if(this.state.status=='success')
+    // {
+    //   this.props.history.push("/user/deviceChangeSearch");
+    // }
   }
 
   // 生命周期--组件加载完毕
@@ -114,45 +112,36 @@ class DeviceChangeEditor extends React.Component {
         editType = '编辑';
         var url = 'http://localhost:8080/#/deviceChange/devicehangeEdit/' + editTarget.id;
         method = 'PUT';
-
-        fetch(url, myFetchOptions)
-        .then(res => res.json())
-        .catch(e => console.log('错误:', e));
-        console.log('status'+this.state.status);
+        message.success('您正在进行相关信息的修改');
+        // fetch(url, myFetchOptions)
+        // .then(res => res.json())
+        // .then(res=>{
+        //   if(res!='404' || res.status!='404'){
+        //     this.setState({status:res.status});
+        //   }
+        // }
+        // )
+        // .catch(e => console.log('错误:'+e));
       }
+
 
       console.log(apiUrl);
 
 
-
+      console.log(this.props);
       fetch(apiUrl, myFetchOptions)
       .then(res => res.json())
       .then(json=>{
-
         this.setState({status:json.status});
         console.log(json);
-      }).catch(e => console.log('错误:', e));
-      console.log('status:'+this.state.status);
-
-      if(this.state.status=='success')
-      {
-        editTarget==undefined?message.success("设备变更信息提交成功"):message.success("设备变更信息修改成功");
-        this.props.history.push('/user/deviceChangeSearch');
-      }
-
+        window.history.back();
+      }).catch(e => console.log('错误:'+e));
     });
   };
 
 
   // 获取推荐用户信息partialUserId
   getRecommendUsers (assetId) {
-    // 请求数据
-    // get('http://localhost:8000/user?id_like=' + partialUserId)
-    // .then((res) => {
-    //   if(res.length === 1 && res[0].id === partialUserId){
-    //     // 如果结果只有1条且id与输入的id一致,说明输入的id已经完整了,没必要再设置建议列表
-    //     return;
-    //   }
     var myFetchOptions = {
       method: 'GET',
       // mode:'no-cors',
@@ -161,32 +150,14 @@ class DeviceChangeEditor extends React.Component {
       },
       timeout:10000,
     };
-    var url="http://127.0.0.1:8070/user/deviceSearchByAssetId?assetId="+assetId;
-    fetch(url, myFetchOptions)
-    // .then(function(response) {
-    //     return response.json();
-    //   }).then(function(data) {
-    //       console.log(data);
-    //       this.setState({status:data.status})
-    //   }).catch(function(e) {
-    //     console.log("Oops, error"+e);
-    // });
-    .then(res => res.json())
-    .then(json=>{
-
-      this.setState({status:json.status});
-      console.log(json);
-    }).catch(e => console.log('错误:', e));
-
-      // 设置建议列表
-    //   this.setState({
-    //     recommendUsers: res.map((user) => {
-    //       return {
-    //         text: `${user.id}(${user.name})`,
-    //         value: user.id
-    //       }
-    //   })
-    // })
+    // var url="http://127.0.0.1:8070/user/deviceSearchByAssetId?assetId="+assetId;
+    // fetch(url, myFetchOptions)
+    // .then(res => res.json())
+    // .then(json=>{
+    //
+    //   this.setState({status:json.status});
+    //   console.log(json);
+    // }).catch(e => console.log('错误:', e));
   }
 
   // 计时器
@@ -216,7 +187,7 @@ class DeviceChangeEditor extends React.Component {
   render() {
     // 定义常量
     const {recommendUsers} = this.state;
-    const {form} = this.props;
+    const {editTarget,form} = this.props;
     const {getFieldDecorator} = form;
 
     return (
@@ -241,12 +212,6 @@ class DeviceChangeEditor extends React.Component {
                 required: true,
                 message: '请输入设备名称',
               }
-              // {
-              //   min: 1,
-              //   max: 99999,
-              //   type: 'number',
-              //   message: '请输入1~99999的数字'
-              // }
             ]
           })(
             // <InputNumber />
@@ -290,7 +255,7 @@ class DeviceChangeEditor extends React.Component {
               }
             ]
           })(
-            <Input type="text" />
+          <Input type="text" />
           )}
         </FormItem>
 
@@ -301,15 +266,8 @@ class DeviceChangeEditor extends React.Component {
                 required: true,
                 message: '请输入旧地方',
               }
-              // {
-              //   min: 1,
-              //   max: 99999,
-              //   type: 'number',
-              //   message: '请输入1~99999的数字'
-              // }
             ]
           })(
-            // <InputNumber />
             <Input type='text'/>
           )}
         </FormItem>
@@ -321,10 +279,6 @@ class DeviceChangeEditor extends React.Component {
                 required: true,
                 message: '新地方'
               }
-              // {
-              //   pattern: /^\d*$/,
-              //   message: '请输入正确的ID'
-              // }
             ]
           })(
             <AutoComplete
@@ -335,7 +289,7 @@ class DeviceChangeEditor extends React.Component {
         </FormItem>
 
         <FormItem wrapperCol={{span: formLayout.wrapperCol.span, offset: formLayout.labelCol.span}}>
-          <Button type="primary" htmlType="submit" >提交</Button>
+          <Button type="primary" htmlType="submit">提交</Button>
         </FormItem>
       </Form>
     );

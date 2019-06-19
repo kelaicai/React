@@ -3,7 +3,9 @@
  */
 import React from 'react';
 // 引入 antd 组件
-import { Input, InputNumber, Form, Button, message } from 'antd';
+import { Input, InputNumber, Form, Button, message,Select ,DatePicker} from 'antd';
+import locale from 'antd/lib/date-picker/locale/zh_CN';
+import moment from 'moment';
 // 引入 prop-types
 import PropTypes from 'prop-types';
 // 引入自动完成组件
@@ -17,7 +19,7 @@ const FormItem = Form.Item;
 const formLayout = {
   // label 标签布局，同 <Col> 组件
   labelCol: {
-    span: 4
+    span: 5
   },
   wrapperCol: {
     span: 16
@@ -137,11 +139,7 @@ class DeviceEditor extends React.Component {
         editType = '编辑';
         var url = 'http://localhost:8080/#/user/deviceEdit/' + editTarget.id;
         method = 'PUT';
-        fetch(url, myFetchOptions)
-        .then(res => res.json())
-        .catch(e => console.log('错误:', e));
-        console.log('status'+this.state.status);
-      //恢复原来的GET方法获奖更新的数据 发送到服务器
+          //恢复原来的GET方法获奖更新的数据 发送到服务器
       method='GET';
       }
       console.log(edu_using);
@@ -150,11 +148,16 @@ class DeviceEditor extends React.Component {
 
 
 
-      fetch(apiUrl, myFetchOptions,value)
+      fetch(apiUrl, myFetchOptions)
       .then(res => res.json())
       .then(json=>{
         this.setState({status:json.status});
         console.log(json);
+        if(json.status=='success')
+        {
+          editTarget?message.success('设备信息修改成功'):message.success('设备信息提交成功');
+          editTarget?window.history.back():this.props.history.push('/user/deviceSearch/');
+        }
       }).catch(e => console.log('错误:', e));
       console.log('status'+this.state.status);
     }
@@ -243,8 +246,15 @@ class DeviceEditor extends React.Component {
   render() {
     // 定义常量
     const {recommendUsers} = this.state;
-    const {form} = this.props;
+    const {form,editTarget} = this.props;
     const {getFieldDecorator} = form;
+    const value=form.getDate;
+    const dateFormat = 'YYYY-MM-DD';
+    if(editTarget)
+    {
+      console.log('修改过程中的数据');
+      console.log(form);
+    }
 
     return (
       <Form onSubmit={this.handleSubmit} style={{width:'400'}}>
@@ -299,12 +309,14 @@ class DeviceEditor extends React.Component {
             rules: [
               {
                 required: true,
-                message: '请输入国标分类'
+                message: '请输入国标大类'
               }
             ],initialValue:form.gbBigClass
           })(
-            <Input type="text" />
-          )}
+          <Select placeholder="请选择国标大类">
+          <Option value="china">通用设备</Option>
+          </Select>
+        )}
         </FormItem>
 
         <FormItem label="资产分类:" {...formLayout}>
@@ -325,11 +337,13 @@ class DeviceEditor extends React.Component {
               {
                 required: true,
                 message: '请输入设备所属财资产大类'
-              }
+              },
             ],initialValue:form.assetBigClass
           })(
-            <Input type="text" />
-          )}
+          <Select placeholder="请选择资产大类">
+          <Option value="通用设备 ">通用设备</Option>
+        </Select>
+        )}
         </FormItem>
         <FormItem label="数量:" {...formLayout}>
           {getFieldDecorator('count',{
@@ -340,7 +354,7 @@ class DeviceEditor extends React.Component {
               }
             ],initialValue:form.count
           })(
-            <Input type="text" />
+            <InputNumber style={{ width: '100%' }} />
           )}
         </FormItem>
         <FormItem label="设备面积:" {...formLayout}>
@@ -374,10 +388,12 @@ class DeviceEditor extends React.Component {
                 required: true,
                 message: '请输入设备获取日期'
               }
-            ],initialValue:form.getDate
+            ],initialValue:form.value
           })(
-            <Input type="text" />
+
+          <Input type="text" />
           )}
+
         </FormItem>
         <FormItem label="教育方向:" {...formLayout}>
           {getFieldDecorator('eduUsing',{
@@ -415,12 +431,12 @@ class DeviceEditor extends React.Component {
             <Input type="text" />
           )}
         </FormItem>
-        <FormItem label="设备的价值类型:" {...formLayout}>
+        <FormItem label="价值类型:" {...formLayout}>
           {getFieldDecorator('valueType',{
             rules: [
               {
                 required: true,
-                message: '请输入设备的价值类型'
+                message: '价值类型'
               }
             ],initialValue:form.valueType
           })(
@@ -428,12 +444,12 @@ class DeviceEditor extends React.Component {
           )}
         </FormItem>
 
-        <FormItem label="财务类型:" {...formLayout}>
+        <FormItem label="存放地点:" {...formLayout}>
           {getFieldDecorator('fianceType',{
             rules: [
               {
                 required: true,
-                message: '请输入设备财务类型'
+                message: '请输入存放地点'
               }
             ],initialValue:form.fianceType
           })(
@@ -461,8 +477,15 @@ class DeviceEditor extends React.Component {
               }
             ],initialValue:form.usingDepartment
           })(
-            <Input type="text" />
-          )}
+          <Select placeholder="请选择使用部门">
+          <Option value="光电工程学院">光电工程学院</Option>
+          <Option value="材料与化工学院">材料与化工学院</Option>
+          <Option value="机械与工程学院">机械与工程学院</Option>
+          <Option value="电子信息科学与技术学院">电子信息科学与技术学院</Option>
+          <Option value="经济管理学院">经济管理学院</Option>
+          <Option value="计算机科学与工程学院">计算机科学与工程学院</Option>
+        </Select>
+        )}
         </FormItem>
         <FormItem label="使用人:" {...formLayout}>
           {getFieldDecorator('user',{

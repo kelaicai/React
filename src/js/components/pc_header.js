@@ -32,30 +32,7 @@ class PCHeader extends React.Component {
       };
     };
 
-    onClick(e)
-    {
-      var url="http://localhost:8070/user/logout";
-      var myFetchOptions = {
-        method: 'GET',
-        // mode:'no-cors',
-        headers:{
-          'Content-Type':'application/json;charset=UTF-8'
-        },
-        timeout:10000,
-      };
 
-      fetch(url,myFetchOptions)
-      .then(
-        res=>res.json())
-      .then(
-        json => {
-        console.log(json);
-        // 设置状态
-        this.setState({
-          status: json.status
-        });
-      })
-    }
 
     render()
     {

@@ -6,6 +6,7 @@ import React from 'react';
 import { message, Table, Button, Popconfirm } from 'antd';
 // 引入 prop-types
 import PropTypes from 'prop-types';
+import Cookies from 'js-cookie';
 // 引入 封装fetch工具类
 // import { get, del } from '../utils/request';
 
@@ -34,15 +35,14 @@ class DeviceUsingEditor extends React.Component {
       },
       timeout:10000,
     };
-    fetch("http://127.0.0.1:8070/deviceUsing/findAllUsing", myFetchOptions)
-    // .then(function(response) {
-    //     return response.json();
-    //   }).then(function(data) {
-    //       console.log(data);
-    //       this.setState({status:data.status})
-    //   }).catch(function(e) {
-    //     console.log("Oops, error"+e);
-    // });
+
+    var workId=localStorage.getItem("workId");
+    // var workId=Cookies.get("workId");
+    console.log("workId usingList");
+    console.log(workId);
+    var temp=workId!=undefined?message.success('获取用户信息成功'):message.error('获取用户信息失败');
+    var url="http://127.0.0.1:8070/deviceUsing/findUsingByWorkId?workId="+workId;
+    fetch(url, myFetchOptions)
     .then(res => res.json())
     .then(json=>{
 
