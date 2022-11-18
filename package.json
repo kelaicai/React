@@ -17,7 +17,7 @@
     "babel-preset-mobx": "^2.0.0",
     "babel-preset-react": "^6.24.1",
     "babelify": "^10.0.0",
-    "css-loader": "^0.25.0",
+    "css-loader": "^6.7.2",
     "easy-monitor": "^2.2.7",
     "fetch": "^1.1.0",
     "jquery": "^3.4.1",
